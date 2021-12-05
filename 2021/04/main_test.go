@@ -1,6 +1,7 @@
 package main
 
 import (
+	"reflect"
 	"testing"
 )
 
@@ -113,10 +114,9 @@ func Test_main(t *testing.T) {
 
 func Test_boards_checkWinners(t *testing.T) {
 	tests := []struct {
-		name        string
-		b           boards
-		winnerIndex int
-		winner      bool
+		name    string
+		b       boards
+		winners map[int]int
 	}{
 		{
 			name: "row winner",
@@ -136,8 +136,9 @@ func Test_boards_checkWinners(t *testing.T) {
 					{1, 2, 3, 4, 5},
 				},
 			},
-			winnerIndex: 1,
-			winner:      true,
+			winners: map[int]int{
+				1: 3,
+			},
 		},
 		{
 			name: "column winner",
@@ -157,18 +158,16 @@ func Test_boards_checkWinners(t *testing.T) {
 					{1, 2, 3, 4, -1},
 				},
 			},
-			winnerIndex: 1,
-			winner:      true,
+			winners: map[int]int{
+				1: 3,
+			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			winnerIndex, winner := tt.b.checkWinners()
-			if winnerIndex != tt.winnerIndex {
-				t.Errorf("boards.checkWinners() got = %v, want %v", winnerIndex, tt.winnerIndex)
-			}
-			if winner != tt.winner {
-				t.Errorf("boards.checkWinners() got1 = %v, want %v", winner, tt.winner)
+			winners := tt.b.checkWinners()
+			if reflect.DeepEqual(winners, tt.winners) {
+				t.Errorf("boards.checkWinners() got = %v, want %v", winners, tt.winners)
 			}
 		})
 	}

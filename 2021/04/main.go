@@ -8,13 +8,6 @@ import (
 	"github.com/larien/adventofcode/input"
 )
 
-// TODO: possible winning indexes: 7, 49, 79 and 93, but the answer is not being calculated correctly
-// the expected answer is 93
-// [29,26,19,-1,-1],[12,88,-1,42,-1],[95,63,78,21,53],[-1,-1,-1,-1,-1],[10,46,24,87,-1]
-// Sum: 693
-// Number: 39
-// Answer: 27027
-
 const inputFile = "input.txt"
 
 type board [5][5]int
@@ -24,45 +17,61 @@ func main() {
 	input := input.ParseString(inputFile)
 
 	result := solve1(input)
-	fmt.Printf("Result: %v\n", result)
+	fmt.Printf("Result 1: %v\n", result)
 
-	// result = solve2(input)
-	// fmt.Printf("Result: %v\n", result)
+	result = solve2(input)
+	fmt.Printf("Result 2: %v\n", result)
 }
 
 func solve1(input []string) (result int) {
-
 	numbers, boards := parseInput(input)
 
 	winnerIndex := 0
 	winnerNumber := 0
 	for _, number := range numbers {
-		fmt.Println("number: ", number)
 		for i := range boards {
 			boards[i].markNumber(number)
-			// boards[i].printBoard()
 		}
-		var winner bool
-		winnerIndex, winner = boards.checkWinners()
-		if winner {
+		winners := boards.checkWinners()
+		if len(winners) > 0 {
 			winnerNumber = number
+			winnerIndex = winners[0]
 			break
 		}
-		// time.Sleep(time.Second * 1)
 	}
 
 	score := boards[winnerIndex].calculateScore()
-	fmt.Println("winner number: ", winnerNumber)
-	fmt.Println("winner board: ", winnerIndex)
+
 	return score * winnerNumber
 }
 
-func (b board) printBoard() {
-	fmt.Println("-------------------")
-	for i := 0; i < 5; i++ {
-		fmt.Println(b[i])
+func solve2(input []string) (result int) {
+	numbers, boards := parseInput(input)
+
+	winnerNumber := 0
+	lastIndex := 0
+	winnerSnapshots := make(map[int]board)
+	for _, number := range numbers {
+		for i := range boards {
+			boards[i].markNumber(number)
+		}
+		winners := boards.checkWinners()
+		if len(winners) > 0 {
+			for _, winnerIndex := range winners {
+				if _, ok := winnerSnapshots[winnerIndex]; !ok {
+					winnerSnapshots[winnerIndex] = boards[winnerIndex]
+					lastIndex = winnerIndex
+				}
+			}
+			if len(winnerSnapshots) == len(boards) {
+				winnerNumber = number
+				break
+			}
+		}
 	}
-	fmt.Println("-------------------")
+
+	score := winnerSnapshots[lastIndex].calculateScore()
+	return score * winnerNumber
 }
 
 func (b *board) markNumber(number int) {
@@ -76,19 +85,22 @@ func (b *board) markNumber(number int) {
 	}
 }
 
-func (b boards) checkWinners() (int, bool) {
+func (b boards) checkWinners() map[int]int {
+	winners := make(map[int]int)
+	count := 0
 	for i, board := range b {
 		if board.checkRow() {
-			fmt.Println("winner: ", i)
-			return i, true
+			winners[count] = i
+			count++
+			continue
 		}
 		if board.checkColumn() {
-			fmt.Println("winner: ", i)
-			return i, true
+			winners[count] = i
+			count++
 		}
 	}
 
-	return 0, false
+	return winners
 }
 
 func (b board) checkRow() bool {
@@ -170,47 +182,4 @@ func parseInput(input []string) (numbers []int, boards boards) {
 	boards = append(boards, b)
 
 	return numbers, boards
-}
-
-func solve2(input []string) (result int) {
-	numbers, boards := parseInput(input)
-
-	winnerIndex := 0
-	winnerNumber := 0
-	lastWinner := 0
-	var winners []int
-	for _, number := range numbers {
-		fmt.Println("number: ", number)
-		for i := range boards {
-			boards[i].markNumber(number)
-		}
-		var winner bool
-		winnerIndex, winner = boards.checkWinners()
-		if winner {
-			winnerNumber = number
-			winners = addWinner(winners, winnerIndex)
-		}
-	}
-
-	score := boards[lastWinner].calculateScore()
-	fmt.Println("winner number: ", winnerNumber)
-	fmt.Println("winner board: ", winnerIndex)
-	return score * winnerNumber
-
-}
-
-func addWinner(winners []int, index int) []int {
-	found := false
-	for _, winner := range winners {
-		if winner == index {
-			found = true
-			break
-		}
-	}
-	if found {
-		return winners
-	}
-	winners = append(winners, index)
-
-	return winners
 }
