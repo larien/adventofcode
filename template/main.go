@@ -10,10 +10,10 @@ func main() {
 	input := input.ParseString("input.txt")
 
 	result := solve1(input)
-	fmt.Printf("Result: %v\n", result)
+	fmt.Printf("Result 1: %v\n", result)
 
 	result = solve2(input)
-	fmt.Printf("Result: %v\n", result)
+	fmt.Printf("Result2  .: %v\n", result)
 }
 
 func solve1(input []string) (result int) {
