@@ -26,8 +26,8 @@ func main() {
 	result := solve1(input)
 	fmt.Printf("Result: %v\n", result)
 
-	result = solve2(input)
-	fmt.Printf("Result: %v\n", result)
+	// result = solve2(input)
+	// fmt.Printf("Result: %v\n", result)
 }
 
 func solve1(input []string) (result int) {
@@ -77,29 +77,23 @@ func (b *board) markNumber(number int) {
 }
 
 func (b boards) checkWinners() (int, bool) {
-	winner := false
-	winnerIndex := 0
 	for i, board := range b {
 		if board.checkRow() {
 			fmt.Println("winner: ", i)
-			winner = true
-			winnerIndex = i
-			continue
+			return i, true
 		}
 		if board.checkColumn() {
 			fmt.Println("winner: ", i)
-			winner = true
-			winnerIndex = i
-			continue
+			return i, true
 		}
 	}
 
-	return winnerIndex, winner
+	return 0, false
 }
 
 func (b board) checkRow() bool {
-	winner := true
 	for i := 0; i < 5; i++ {
+		winner := true
 		for j := 0; j < 5; j++ {
 			number := b[i][j]
 			if number != -1 {
@@ -115,10 +109,11 @@ func (b board) checkRow() bool {
 }
 
 func (b board) checkColumn() bool {
-	winner := true
 	for j := 0; j < 5; j++ {
+		winner := true
 		for i := 0; i < 5; i++ {
-			if b[j][i] != -1 {
+			number := b[i][j]
+			if number != -1 {
 				winner = false
 				break
 			}
@@ -178,5 +173,44 @@ func parseInput(input []string) (numbers []int, boards boards) {
 }
 
 func solve2(input []string) (result int) {
-	return 0
+	numbers, boards := parseInput(input)
+
+	winnerIndex := 0
+	winnerNumber := 0
+	lastWinner := 0
+	var winners []int
+	for _, number := range numbers {
+		fmt.Println("number: ", number)
+		for i := range boards {
+			boards[i].markNumber(number)
+		}
+		var winner bool
+		winnerIndex, winner = boards.checkWinners()
+		if winner {
+			winnerNumber = number
+			winners = addWinner(winners, winnerIndex)
+		}
+	}
+
+	score := boards[lastWinner].calculateScore()
+	fmt.Println("winner number: ", winnerNumber)
+	fmt.Println("winner board: ", winnerIndex)
+	return score * winnerNumber
+
+}
+
+func addWinner(winners []int, index int) []int {
+	found := false
+	for _, winner := range winners {
+		if winner == index {
+			found = true
+			break
+		}
+	}
+	if found {
+		return winners
+	}
+	winners = append(winners, index)
+
+	return winners
 }
