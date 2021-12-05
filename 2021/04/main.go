@@ -8,7 +8,12 @@ import (
 	"github.com/larien/adventofcode/input"
 )
 
-// TODO: 7 and 75 wins, but only 7 counts since it's the first one
+// TODO: possible winning indexes: 7, 49, 79 and 93, but the answer is not being calculated correctly
+// the expected answer is 93
+// [29,26,19,-1,-1],[12,88,-1,42,-1],[95,63,78,21,53],[-1,-1,-1,-1,-1],[10,46,24,87,-1]
+// Sum: 693
+// Number: 39
+// Answer: 27027
 
 const inputFile = "input.txt"
 
@@ -72,16 +77,24 @@ func (b *board) markNumber(number int) {
 }
 
 func (b boards) checkWinners() (int, bool) {
+	winner := false
+	winnerIndex := 0
 	for i, board := range b {
 		if board.checkRow() {
-			return i, true
+			fmt.Println("winner: ", i)
+			winner = true
+			winnerIndex = i
+			continue
 		}
 		if board.checkColumn() {
-			return i, true
+			fmt.Println("winner: ", i)
+			winner = true
+			winnerIndex = i
+			continue
 		}
 	}
 
-	return 0, false
+	return winnerIndex, winner
 }
 
 func (b board) checkRow() bool {
