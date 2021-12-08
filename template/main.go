@@ -13,7 +13,7 @@ func main() {
 	fmt.Printf("Result 1: %v\n", result)
 
 	result = solve2(input)
-	fmt.Printf("Result2  .: %v\n", result)
+	fmt.Printf("Result 2: %v\n", result)
 }
 
 func solve1(input []string) (result int) {

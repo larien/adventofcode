@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 )
 
 // ParseInt return content of file as int
@@ -54,5 +55,27 @@ func ParseString(path string) []string {
 		log.Fatal(err)
 	}
 
+	return result
+}
+
+func ParseIntoMap(input []string) map[int]int {
+	result := make(map[int]int)
+
+	resultStr := strings.Split(input[0], ",")
+	for _, value := range resultStr {
+		i, _ := strconv.Atoi(value)
+		result[i]++
+	}
+	return result
+}
+
+func ParseIntoSlice(input []string) []int {
+	var result []int
+
+	resultStr := strings.Split(input[0], ",")
+	for _, value := range resultStr {
+		i, _ := strconv.Atoi(value)
+		result = append(result, i)
+	}
 	return result
 }
