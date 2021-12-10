@@ -16,3 +16,24 @@ func Median(numbers []int) int {
 
 	return (numbers[index-1] + numbers[index]) / 2
 }
+
+func StringInSlice(slice []string, s string) bool {
+	for _, item := range slice {
+		if item == s {
+			return true
+		}
+	}
+	return false
+}
+
+func RemoveFromSlice(s []string, value string) []string {
+	out := make([]string, len(s))
+	i := 0
+	for _, v := range s {
+		if v != value {
+			out[i] = v
+			i++
+		}
+	}
+	return out[:i]
+}
